@@ -1,0 +1,6 @@
+# Make tab autocomplete case-insensitive
+set completion-ignore-case on
+
+# History search
+"\e[A": history-search-backward
+"\e[B": history-search-forward
