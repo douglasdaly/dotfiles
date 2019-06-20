@@ -85,7 +85,7 @@ nnoremap <silent><leader>j :set paste<CR>m`O<Esc>``:set nopaste<CR>
 "nnoremap <silent> <leader>z :bprevious<CR>
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
-nnoremap <C-x> :bdelete<CR>
+nnoremap <C-x> :b#<bar>bd#<CR>
 
 " create window splits more easily
 nnoremap <silent> vv <C-w>v
@@ -99,11 +99,6 @@ nnoremap <S-l> <C-w>l
 
 " - restore original <S-j> to <C-j>
 nnoremap <C-j> <S-j>
-
-" }}}
-" Section: File-specific settings {{{
-
-let python_highlight_all=1
 
 " }}}
 " Plugins {{{
@@ -147,17 +142,19 @@ Plug 'w0rp/ale'
 Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
+Plug 'sheerun/vim-polyglot'
 
 " Misc. files
 Plug 'editorconfig/editorconfig-vim'
 Plug 'freitass/todo.txt-vim'
+Plug 'vimwiki/vimwiki'
 
 " Web
 Plug 'mattn/emmet-vim'
 Plug 'pangloss/vim-javascript'
 
 " Python
-Plug 'Vimjas/vim-python-pep8-indent'
+"Plug 'Vimjas/vim-python-pep8-indent'
 
 " Misc. tools
 Plug 'reedes/vim-pencil'
@@ -170,9 +167,21 @@ call plug#end()
 " }}}
 " Plugin Settings {{{
 
+" Ack settings
+if executable('ag')
+    let g:ackprg = 'ag --vimgrep'
+endif
+
+" ALE Settings
+"let g:ale_python_auto_pipenv = 1
+let g:ale_sign_column_always = 1
+
 " Airline settings
 let g:airline_theme='term'
 let g:airline#extensions#tabline#enabled = 1
+
+" BufferGator
+map <C-b> :BuffergatorToggle<CR>
 
 " Dev Icons Settings
 let g:DevIconsEnableNERDTreeRedraw = 1
@@ -184,12 +193,9 @@ nnoremap gm m
 
 " Easy-escape settings
 let g:easyescape_chars = { "j": 1, "k": 1 }
-let g:easyescape_timeout = 100
+let g:easyescape_timeout = 200
 cnoremap jk <ESC>
 cnoremap kj <ESC>
-
-" BufferGator
-map <C-b> :BuffergatorToggle<CR>
 
 " NERD Tree
 map <C-n> :NERDTreeToggle<CR>
@@ -201,6 +207,17 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | wincmd p | ene | exe 'NERDTreeToggle' argv()[0] | endif
 autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" | b# | endif
+
+" Pencil configuration
+let g:pencil#wrapModeDefault = 'soft'
+
+augroup pencil
+    autocmd!
+    autocmd FileType text call pencil#init()
+augroup END
+
+" Python Syntax
+let g:python_highlight_all = 1
 
 " Tagbar
 nmap <C-m> :TagbarToggle<CR>
@@ -214,29 +231,21 @@ nnoremap <silent> <S-k> :TmuxNavigateUp<CR>
 nnoremap <silent> <S-l> :TmuxNavigateRight<CR>
 "nnoremap <silent> <S-/> :TmuxNavigatePrevious<CR>
 
-" YouCompleteMe settings
-let g:ycm_autoclose_preview_window_after_completion=1
-map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
-" Ack settings
-if executable('ag')
-    let g:ackprg = 'ag --vimgrep'
-endif
-
-" ALE Settings
-"let g:ale_python_auto_pipenv = 1
-let g:ale_sign_column_always = 1
-
 " Vim-Test Settings
 let test#strategy = "vimterminal"
 
-" Pencil configuration
-let g:pencil#wrapModeDefault = 'soft'
+" VimWiki
+let g:vimwiki_list = [{'syntax': 'markdown', 'ext': '.md'}]
 
-augroup pencil
-    autocmd!
-    autocmd FileType text call pencil#init()
-augroup END
+" Window Swap
+let g:windowswap_map_keys = 0
+nnoremap <silent> <leader>yw :call WindowSwap#MarkWindowSwap()<CR>
+nnoremap <silent> <leader>pw :call WindowSwap#DoWindowSwap()<CR>
+nnoremap <silent> <leader>sw :call WindowSwap#EasyWindowSwap()<CR>
+
+" YouCompleteMe settings
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " }}}
 " Custom Functions {{{
@@ -283,6 +292,20 @@ function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
     exec 'autocmd filetype nerdtree highlight ' . a:extension . color_str
     exec 'autocmd filetype nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
 endfunction
+
+" YCM Python Virtual Environments
+function! SetPipenvPythonPath()
+    let pipenv_venv_path = system('pipenv --venv')
+
+    if shell_error == 0
+        let venv_path = substitute(pipenv_venv_path, '\n', '', '')
+        let g:ycm_python_binary_path = venv_path . '/bin/python'
+    else
+        let g:ycm_python_binary_path = 'python'
+    endif
+endfunction
+
+call SetPipenvPythonPath()
 
 " }}}
 " Colors {{{
