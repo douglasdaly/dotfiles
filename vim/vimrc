@@ -220,7 +220,8 @@ augroup END
 let g:python_highlight_all = 1
 
 " Tagbar
-nmap <C-m> :TagbarToggle<CR>
+nnoremap <C-m> :TagbarToggle<CR>
+let g:tagbar_autofocus = 1
 
 " Tmux Navigator
 let g:tmux_navigator_no_mappings = 1
@@ -305,7 +306,11 @@ function! SetPipenvPythonPath()
     endif
 endfunction
 
-call SetPipenvPythonPath()
+" }}}
+" File specific settings {{{
+
+" Python
+autocmd FileType python call SetPipenvPythonPath()
 
 " }}}
 " Colors {{{
