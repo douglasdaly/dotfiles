@@ -16,18 +16,20 @@ set novisualbell
 
 set encoding=UTF-8
 
+filetype indent on
+filetype plugin on
+
 " }}}
 " Colors {{{
 
 syntax enable
-filetype indent on
-filetype plugin on
 
 if (has("termguicolors"))
     set termguicolors
 endif
+
 " }}}
-" Spaces & Tabs {{{{{{
+" Spaces & Tabs {{{
 
 set backspace=indent,eol,start
 
@@ -39,7 +41,7 @@ set expandtab		        " Use spaces for tabs
 set tabstop=4               " 4 spaces per tab
 set softtabstop=4	        " 4 space tab
 
-" }}}}}}
+" }}}
 " Folding {{{
 
 set modelines=1
@@ -65,9 +67,15 @@ set relativenumber
 :  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 :augroup END
 
-set ruler
+set numberwidth=5           " Fixed linenumber column width
+
 set cursorline              " Current line highlight
-set colorcolumn=73,80
+
+set ruler                   " Rulers
+set textwidth=79            " Default to max line length of 79
+set colorcolumn=+1          " Set ruler at 1 past max line length
+"set wrap linebreak nolist   " Don't automatically wrap lines
+
 set hid                     " Hide abandoned buffers
 
 set lazyredraw              " Only redraw when needed
@@ -75,10 +83,13 @@ set showmatch               " Highlight matching brackets
 set wildmenu                " Visual autocomplete for command menu
 set laststatus=2
 
-:set so=999                 " Center cursor in window
+set so=999                 " Center cursor in window
 
 set splitbelow
 set splitright
+
+" popup menus
+set completeopt=menu,preview,noselect,noinsert
 
 
 " }}}
@@ -99,7 +110,7 @@ vnoremap // y/<C-R>"<CR>
 nnoremap j gj
 nnoremap k gk
 
-" Move between splits with Shift
+" Move between splits
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -126,6 +137,10 @@ nnoremap <silent> <C-x> :b#<bar>bd#<CR>
 nnoremap <silent> vv <C-w>v
 nnoremap <silent> ss <C-w>s
 
+" switch between the last two files
+nnoremap <leader><leader> <C-^>
+
+
 " }}}
 " Plugins {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -150,8 +165,9 @@ Plug 'zhou13/vim-easyescape'
 
 let g:easyescape_chars = { "j": 1, "k": 1 }
 let g:easyescape_timeout = 200
-cnoremap jk <ESC>
-cnoremap kj <ESC>
+
+"cnoremap jk <ESC>
+"cnoremap kj <ESC>
 " }}}
 " {{{ Easy Clip
 Plug 'svermeulen/vim-easyclip'
@@ -191,6 +207,8 @@ set undodir=~/.local/share/nvim/undo
 " Git
 " {{{ Fugitive (Git)
 Plug 'tpope/vim-fugitive'
+
+set tags^=.git/tags
 " }}}
 " {{{ Git Gutter
 Plug 'airblade/vim-gitgutter'
@@ -288,18 +306,19 @@ Plug 'honza/vim-snippets'
 
 " Dev tools
 " {{{ CoC (Autocomplete)
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 "set cmdheight=2
 set updatetime=300
 set shortmess+=c
 set signcolumn=yes
 
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
+" tab handling
+inoremap <expr> <TAB>
+    \ pumvisible() ? "\<lt>C-n>" :
+    \ <SID>check_back_space() ? "\<lt>TAB>" :
     \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr> <S-TAB> pumvisible() ? "\<lt>C-p>" : "\<lt>S-TAB>"
 
 function! s:check_back_space() abort
     let col = col('.') - 1
@@ -310,13 +329,21 @@ endfunction
 inoremap <silent><expr> <c-space> coc#refresh()
 
 " use <CR> to confirm completion
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+if exists("complete_info")
+    inoremap <expr> <CR> complete_info()["selected"] == -1 ? "\<lt>CR>" : "\<lt>C-y>"
+else
+    inoremap <expr> <CR> pumvisible() ? "\<lt>C-y>" : "\<lt>C-g>u\<lt>CR>"
+endif
 
 " goto keys
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostics-prev)
+nmap <silent> ]g <Plug>(coc-diagnostics-next)
 
 " use K to show doc in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -339,10 +366,18 @@ nmap <leader>rn <Plug>(coc-rename)
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " use <tab> for select selections ranges
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+"xmap <silent> <TAB> <Plug>(coc-range-select)
+"xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
 
+" CocList shortcuts
+nnoremap <silent> <leader><space>a :<C-u>CocList diagnostics<CR>
+nnoremap <silent> <leader><space>e :<C-u>CocList extensions<CR>
+nnoremap <silent> <leader><space>c :<C-u>CocList commands<CR>
+nnoremap <silent> <leader><space>o :<C-u>CocList outline<CR>
+nnoremap <silent> <leader><space>s :<C-u>CocList -I symbols<CR>
+nnoremap <silent> <leader><space>j :<C-u>CocNext<CR>
+nnoremap <silent> <leader><space>k :<C-u>CocPrev<CR>
+nnoremap <silent> <leader><space>p :<C-u>CocListResume<CR>
 " }}}
 " {{{ Tests
 Plug 'janko/vim-test'
@@ -363,22 +398,22 @@ let g:python_highlight_all = 1
 
 " Python
 " {{{ IPython
-Plug 'bfredl/nvim-ipy'
+"Plug 'bfredl/nvim-ipy'
 
-function! ConnectToPipenvKernel()
-    let a:kernel = GetKernelFromPipenv()
-    call IPyConnect('--kernel', a:kernel, '--no-window')
-endfunction
+"function! ConnectToPipenvKernel()
+"    let a:kernel = GetKernelFromPipenv()
+"    call IPyConnect('--kernel', a:kernel, '--no-window')
+"endfunction
 
-function! AddFilepathToSyspath()
-    let a:filepath = expand('%:p:h')
-    call IPyRun('import sys; sys.path.append("' . a:filepath . '")')
-    echo 'Added ' . a:filepath . ' to python sys.path'
-endfunction
+"function! AddFilepathToSyspath()
+"    let a:filepath = expand('%:p:h')
+"    call IPyRun('import sys; sys.path.append("' . a:filepath . '")')
+"    echo 'Added ' . a:filepath . ' to python sys.path'
+"endfunction
 
-command! -nargs=0 ConnectToPipenvKernel call ConnectToPipenvKernel()
-command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --existing")
-command! -nargs=0 AddFilepathToSyspath call AddFilepathToSyspath()
+"command! -nargs=0 ConnectToPipenvKernel call ConnectToPipenvKernel()
+"command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --existing")
+"command! -nargs=0 AddFilepathToSyspath call AddFilepathToSyspath()
 " }}}
 
 " Misc. files
@@ -454,6 +489,49 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <leader>h :call ToggleHiddenAll()<CR>
+
+" Turn auto-centering on/off
+if &so == 999
+    let s:is_centering = 1
+else
+    let s:is_centering = 0
+endif
+
+function! ToggleCentering()
+    if s:is_centering == 0
+        set so=999
+        let s:is_centering = 1
+    else
+        set so=0
+        let s:is_centering = 0
+        call feedkeys("zz")
+    endif
+endfunction
+
+nnoremap <silent> <leader>zz :call ToggleCentering()<CR>
+
+
+" }}}
+" File-Specific Settings {{{
+
+augroup vimrcEx
+    autocmd!
+
+    " When editing a file jump to last known cursor position (except git
+    " stuff).
+    autocmd BufReadPost *
+        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g \"" |
+        \ endif
+
+    " Set syntax highlighting for specific file types.
+    autocmd BufRead,BufNewFile .{babel,prettier,eslint}rc set filetype=json
+    autocmd BufRead,BufNewFile .{aliases,exports,functions} set filetype=sh
+
+    " Python
+    autocmd BufRead,BufNewFile *.py set textwidth=79 colorcolumn=73,80
+
+augroup END
 
 " }}}
 " {{{ Neovim 

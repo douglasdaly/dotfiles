@@ -14,7 +14,7 @@ export BASH_IT="$HOME/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-export BASH_IT_THEME='pure'
+export BASH_IT_THEME='custom'
 
 # (Advanced): Change this to the name of your remote repo if you
 # cloned bash-it with a remote other than origin such as `bash-it`.
@@ -37,7 +37,7 @@ export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=false
 
 # Projects plugin
-export PROJECT_PATHS=~/Codebase:~/Projects
+export PROJECT_PATHS=~/Codebase:~/Projects:~/Research
 
 # Set Xterm/screen/Tmux title with only a short hostname.
 # Uncomment this (or set SHORT_HOSTNAME to something else),
@@ -61,12 +61,19 @@ export SHORT_TERM_LINE=true
 # after enabling or disabling aliases, plugins, and completions.
 #export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
+# Customize prompt
+export ps_user_mark="\n$ps_user_mark"
+
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
 ###
 ### ADDITIONAL SETUP
 ###
+
+# Bazel completions
+
+source $HOME/.bazel/bin/bazel-complete.bash
 
 # Explorer 'function' to open file explorer
 
@@ -82,4 +89,6 @@ function explorer() {
     (nohup nautilus -w $open_path > /dev/null 2>&1 &)
 }
 
+# FZF
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+

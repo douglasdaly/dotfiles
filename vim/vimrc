@@ -4,6 +4,7 @@
 set nocompatible
 set nocp
 filetype plugin indent on
+
 syntax enable
 set backspace=indent,eol,start
 set encoding=UTF-8
@@ -36,15 +37,28 @@ set shiftwidth=4
 " UI {{{
 
 set number
+set relativenumber
+
+:set number relativenumber
+
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+:augroup END
+
 set ruler
 set cursorline              " Current line highlight
+set colorcolumn=73,80
+
 set lazyredraw              " Only redraw when needed
 set showmatch               " Highlight matching brackets
 set wildmenu                " Visual autocomplete for command menu
 set laststatus=2
+
 set splitbelow
 set splitright
-set colorcolumn=73,80
+
 
 " }}}
 " Searching {{{
@@ -54,6 +68,7 @@ set hlsearch                " Highlight matches
 
 " turn off search highlight shortcut
 nnoremap // :nohlsearch<CR>
+vnoremap // y/<C-R>"<CR>
 
 " }}}
 " Movement {{{
@@ -62,68 +77,41 @@ nnoremap // :nohlsearch<CR>
 nnoremap j gj
 nnoremap k gk
 
-" move between splits
-nnoremap <C-j> <C-w><C-j>
-nnoremap <C-k> <C-w><C-k>
-nnoremap <C-l> <C-w><C-l>
-nnoremap <C-h> <C-w><C-h>
-
-" }}}
-" Keyboard Shortcuts {{{
-
-let mapleader=","           " Leader is a comma
-
-" shortcut to edit this file
-noremap <leader>vim :edit ~/.vim/vimrc<CR>
-
-" Easily add/remove blank lines from file
-nnoremap <silent><leader>k :set paste<CR>m`o<Esc>``:set nopaste<CR>
-nnoremap <silent><leader>j :set paste<CR>m`O<Esc>``:set nopaste<CR>
-
-" move between buffers
-"nnoremap <silent> <leader>x :bnext<CR>
-"nnoremap <silent> <leader>z :bprevious<CR>
-nnoremap <Tab> :bnext<CR>
-nnoremap <S-Tab> :bprevious<CR>
-nnoremap <C-x> :b#<bar>bd#<CR>
-
-" create window splits more easily
-nnoremap <silent> vv <C-w>v
-nnoremap <silent> ss <C-w>s
-
 " Move between splits with Shift
 nnoremap <S-h> <C-w>h
 nnoremap <S-j> <C-w>j
 nnoremap <S-k> <C-w>k
 nnoremap <S-l> <C-w>l
 
-" - restore original <S-j> to <C-j>
-nnoremap <C-j> <S-j>
+" }}}
+" Keyboard Shortcuts {{{
+
+let mapleader=","           " Leader is a comma
+
+" Shortcut to edit this file
+noremap <leader>vim :edit ~/.vim/vimrc<CR>
+
+" Easily add/remove blank lines from file
+nnoremap <silent> <leader>k :set paste<CR>m`o<Esc>``:set nopaste<CR>
+nnoremap <silent> <leader>j :set paste<CR>m`O<Esc>``:set nopaste<CR>
+
+" Move between buffers
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+nnoremap <C-x> :b#<bar>bd#<CR>
+
+" Create window splits more easily
+nnoremap <silent> vv <C-w>v
+nnoremap <silent> ss <C-w>s
+
+" Easier system copy/paste
+"nnoremap <leader>y "*y
+"nnoremap <leader>p "*p
 
 " }}}
 " Plugins {{{
 
 call plug#begin()
-" Git
-Plug 'airblade/vim-gitgutter'
-Plug 'jaxbot/github-issues.vim'
-Plug 'tpope/vim-fugitive'
-
-" File related
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'gilsondev/searchtasks.vim'
-
-Plug 'godlygeek/tabular'
-
-" UI
-Plug 'jeetsukumaran/vim-buffergator'
-Plug 'majutsushi/tagbar'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-"Plug 'Xuyuanp/nerdtree-git-plugin'
-
 " VIM helpers
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'wesQ3/vim-windowswap'
@@ -133,21 +121,39 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-repeat'
-Plug 'schickling/vim-bufonly'
+
+" Git
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+
+" File related
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
+" UI
+Plug 'jeetsukumaran/vim-buffergator'
+Plug 'majutsushi/tagbar'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+"Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'Yggdroot/indentLine'
 
 " Dev tools
 Plug 'janko/vim-test'
-Plug 'valloric/YouCompleteMe'
+Plug 'valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'w0rp/ale'
-Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'sheerun/vim-polyglot'
 
+" Snippets
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
 " Misc. files
 Plug 'editorconfig/editorconfig-vim'
 Plug 'freitass/todo.txt-vim'
-Plug 'vimwiki/vimwiki'
 
 " Web
 Plug 'mattn/emmet-vim'
@@ -156,12 +162,15 @@ Plug 'pangloss/vim-javascript'
 " Python
 "Plug 'Vimjas/vim-python-pep8-indent'
 
+" Markdown
+Plug 'plasticboy/vim-markdown'
+
 " Misc. tools
 Plug 'reedes/vim-pencil'
-Plug 'tpope/vim-dadbod'
 
 " (Needs to be called last)
 Plug 'ryanoasis/vim-devicons'
+Plug 'ervandew/supertab'
 call plug#end()
 
 " }}}
@@ -173,7 +182,7 @@ if executable('ag')
 endif
 
 " ALE Settings
-"let g:ale_python_auto_pipenv = 1
+let g:ale_python_auto_pipenv = 1
 let g:ale_sign_column_always = 1
 
 " Airline settings
@@ -197,6 +206,12 @@ let g:easyescape_timeout = 200
 cnoremap jk <ESC>
 cnoremap kj <ESC>
 
+" Indent Line
+let g:indentLine_setConceal = 0
+
+" Markdown
+let g:vim_markdown_conceal = 0
+
 " NERD Tree
 map <C-n> :NERDTreeToggle<CR>
 let g:NERDTreeAutoDeleteBuffer = 1
@@ -219,9 +234,15 @@ augroup END
 " Python Syntax
 let g:python_highlight_all = 1
 
+" SuperTab
+let g:SuperTabDefaultCompletionType = '<C-n>'
+let g:SuperTabContextDefaultCompletionType = "<c-n>"
+
 " Tagbar
 nnoremap <C-m> :TagbarToggle<CR>
 let g:tagbar_autofocus = 1
+let g:tagbar_autoclose = 1
+unmap <CR>
 
 " Tmux Navigator
 let g:tmux_navigator_no_mappings = 1
@@ -232,11 +253,19 @@ nnoremap <silent> <S-k> :TmuxNavigateUp<CR>
 nnoremap <silent> <S-l> :TmuxNavigateRight<CR>
 "nnoremap <silent> <S-/> :TmuxNavigatePrevious<CR>
 
+" Ultisnips
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+let g:UltiSnipsListSnippets = "<c-tab>"
+let g:UltiSnipsEditSplit = "vertical"
+
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim/my-snippets/UltiSnips', 'UltiSnips']
+
+let g:ultisnips_python_style = "numpy"
+
 " Vim-Test Settings
 let test#strategy = "vimterminal"
-
-" VimWiki
-let g:vimwiki_list = [{'syntax': 'markdown', 'ext': '.md'}]
 
 " Window Swap
 let g:windowswap_map_keys = 0
@@ -245,7 +274,15 @@ nnoremap <silent> <leader>pw :call WindowSwap#DoWindowSwap()<CR>
 nnoremap <silent> <leader>sw :call WindowSwap#EasyWindowSwap()<CR>
 
 " YouCompleteMe settings
-let g:ycm_autoclose_preview_window_after_completion=1
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_filetype_specific_completion_to_disable = {
+    \ 'gitcommit': 1,
+    \ 'swap': 1
+    \ }
+
 map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " }}}
@@ -308,6 +345,8 @@ endfunction
 
 " }}}
 " File specific settings {{{
+
+set conceallevel=0
 
 " Python
 autocmd FileType python call SetPipenvPythonPath()
