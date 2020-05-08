@@ -55,6 +55,30 @@ update-vim:
 	@cp $(HOME)/.vim/vimrc ./vim/
 	@cp $(HOME)/.vim/colors/* ./vim/colors/
 
-install: ## Installs these dotfiles on the local system.
-	@echo '[INFO] Install'
+# - Install
 
+install: install-start install-bash install-bashit install-neovim install-vim ## Installs these dotfiles on the local system.
+	@echo '[INFO] Done'
+
+install-start:
+	@echo '[INFO] Installing:'
+
+install-bash:
+	@echo ' - Bash'
+	@cp ./bashrc $(HOME)/.bashrc
+	@cp ./profile $(HOME)/.profile
+	@cp ./aliases $(HOME)/.aliases
+	@cp ./exports $(HOME)/.exports
+	@cp ./inputrc $(HOME)/.inputrc
+
+install-bashit:
+	@echo ' - Bash-It'
+	@cp -r ./bash_it/* $(HOME)/.bash_it/custom/
+
+install-neovim:
+	@echo ' - NeoVim'
+	@cp -r ./neovim/* $(HOME)/$(CONFIG)/nvim/
+
+install-vim:
+	@echo ' - Vim'
+	@cp -r ./vim/* $(HOME)/.vim/
