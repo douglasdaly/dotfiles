@@ -28,7 +28,7 @@ help:
 
 # - Updates
 
-update: update-start update-bash update-neovim update-vim ## Updates these dotfiles from the local system.
+update: update-start update-bash update-bashit update-neovim update-vim ## Updates these dotfiles from the local system.
 	@echo '[INFO] DONE.'
 
 update-start:
@@ -37,10 +37,14 @@ update-start:
 update-bash:
 	@echo ' - Bash'
 	@cp $(HOME)/.bashrc ./bashrc
-	@cp $(HOME)/.bash_profile ./bash_profile
+	@cp $(HOME)/.profile ./profile
 	@cp $(HOME)/.aliases ./aliases
 	@cp $(HOME)/.exports ./exports
 	@cp $(HOME)/.inputrc ./inputrc
+
+update-bashit:
+	@echo ' - Bash-It'
+	@cp -r $(HOME)/.bash_it/custom/* ./bash_it/
 
 update-neovim:
 	@echo ' - NeoVim'

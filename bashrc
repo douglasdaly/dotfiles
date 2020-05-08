@@ -61,9 +61,6 @@ export SHORT_TERM_LINE=true
 # after enabling or disabling aliases, plugins, and completions.
 #export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
-# Customize prompt
-export ps_user_mark="\n$ps_user_mark"
-
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
