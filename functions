@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#
+# Bash Functions
+#
+
+##
+##  System Helpers
+##
+
+# detach: Run a given command in the background, and detach completely
+function detach() {
+    ("$@" 1>/dev/null 2>&1 & disown -h 1>/dev/null)
+}
+
+##
+##  Files
+##
+
+# explorer: Open file explorer from terminal
+function explorer() {
+    local fpath="${1:-.}"
+    if [ ! -f $fpath ] && [ ! -d $fpath ]; then
+        echo "explorer: $fpath: No such file or directory"
+        return 1
+    else
+        detach nautilus --new-window $fpath
+    fi
+    return 0
+}
+
