@@ -137,6 +137,12 @@ nnoremap <silent> <C-x> :b#<bar>bd#<CR>
 nnoremap <silent> vv <C-w>v
 nnoremap <silent> ss <C-w>s
 
+" jump between splits more easily
+nnoremap <silent> <C-h> <C-w><C-h>
+nnoremap <silent> <C-j> <C-w><C-j>
+nnoremap <silent> <C-k> <C-w><C-k>
+nnoremap <silent> <C-l> <C-w><C-l>
+
 " switch between the last two files
 nnoremap <leader><leader> <C-^>
 
@@ -424,9 +430,13 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'freitass/todo.txt-vim'
 " }}}
 " {{{ Markdown
-Plug 'plasticboy/vim-markdown'
+Plug 'godlygeek/tabular'
+"Plug 'plasticboy/vim-markdown'
 
-let g:vim_markdown_conceal = 0
+"let g:vim_markdown_conceal = 0
+" }}}
+" LaTeX {{{
+"Plug 'lervag/vimtex'
 " }}}
 
 " Web
@@ -457,6 +467,7 @@ call plug#end()
 " }}}
 " Misc Settings {{{
 
+" Color Scheme
 colorscheme codedark
 
 " }}}
@@ -526,7 +537,7 @@ augroup vimrcEx
 
     " Set syntax highlighting for specific file types.
     autocmd BufRead,BufNewFile .{babel,prettier,eslint}rc set filetype=json
-    autocmd BufRead,BufNewFile .{aliases,exports,functions} set filetype=sh
+    autocmd BufRead,BufNewFile .{aliases,bash_aliases,exports,functions} set filetype=sh
 
     " Python
     autocmd BufRead,BufNewFile *.py set textwidth=79 colorcolumn=73,80
@@ -537,7 +548,8 @@ augroup END
 " {{{ Neovim 
 
 " python3
-let g:python3_host_prog = '~/.pyenv/versions/neovim-venv/bin/python'
+let g:python_host_prog = '~/.pyenv/versions/neovim2-venv/bin/python'
+let g:python3_host_prog = '~/.pyenv/versions/neovim3-venv/bin/python'
 
 " }}}
 " vim:set foldmethod=marker foldlevel=0:
